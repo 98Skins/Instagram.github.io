@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram • Powitanie</title>
+    <style>
+        /* DEFINICJA KOLORÓW DLA NOWEGO EKRANU */
+        :root {
+            --bg-color: #000000;              /* Ciemne tło */
+            --main-text: #ffffff;             /* Biały tekst */
+            --secondary-text: #a8a8a8;        /* Szary tekst (Polski, 'lub', Meta) */
+            --accent-gradient: linear-gradient(to right, #e95950, #bc2a8d); /* Gradient dla 'codzienne chwile' */
+            --btn-blue: #475aff;              /* Jasny, żywy niebieski przycisku */
+            --btn-text: #ffffff;
+            --link-blue: #0095f6;             /* Niebieski dla linków 'Zaloguj się' */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent; /* Usuwa efekt kliknięcia na mobile */
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--main-text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 100vh;
+            padding: 20px 25px;
+            overflow: hidden; /* Zapobiega przewijaniu na tym ekranie */
+        }
+
+        /* GÓRA: SELEKTOR JĘZYKA */
+        .header-lang {
+            display: flex;
+            align-items: center;
+            color: var(--secondary-text);
+            font-size: 13px;
+            margin-top: 5px;
+            margin-bottom: 20px;
+        }
+
+        .header-lang::after {
+            content: '▼'; /* Uproszczona strzałka */
+            font-size: 8px;
+            margin-left: 5px;
+            color: var(--secondary-text);
+        }
+
+        /* ŚRODEK: GŁÓWNA TREŚĆ */
+        .hero-section {
+            width: 100%;
+            max-width: 360px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-grow: 1;
+            justify-content: center;
+            text-align: center;
+            margin-top: -30px; /* Przesunięcie do góry dla lepszej kompozycji */
+        }
+
+        /* Logo tekstowe 'Instagram' */
+        .insta-text-logo {
+            font-size: 48px; /* Duże logo */
+            font-family: 'Billabong', cursive, sans-serif; /* Próba użycia zbliżonej czcionki */
+            /* Ponieważ czcionki Billabong nie ma standardowo, użyjemy obrazka SVG dla idealnego odwzorowania */
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 175 48"><path d="M47.7,46.8c-1.8,0-3.3-0.5-4.4-1.6s-1.7-2.6-1.7-4.6V17h6.6v23.4c0,0.6,0.1,1,0.4,1.4s0.6,0.5,1.1,0.5s0.8-0.1,1.1-0.2s0.5-0.2,0.6-0.3l1.8,5.1C51.6,46.3,49.8,46.8,47.7,46.8z M44.6,11.2c-1,1-1.6,2.3-1.6,3.8s0.5,2.7,1.6,3.8s2.3,1.6,3.8,1.6s2.7-0.5,3.8-1.6s1.6-2.3,1.6-3.8s-0.5-2.7-1.6-3.8s-2.3-1.6-3.8-1.6S45.6,10.1,44.6,11.2z M107,31.8c0,2.6-0.4,4.9-1.3,6.8s-2,3.5-3.5,4.7s-3.2,2.1-5.1,2.6s-3.9,0.8-6,0.8s-4.1-0.3-6.1-0.8s-3.8-1.4-5.3-2.6s-2.7-2.8-3.6-4.7s-1.3-4.2-1.3-6.8c0-2.6,0.4-4.9,1.3-6.8s2-3.5,3.6-4.7s3.3-2.1,5.3-2.6s4-0.8,6.1-0.8s4.1,0.3,6,0.8s3.6,1.4,5.1,2.6s2.6,2.8,3.5,4.7S107,29.1,107,31.8z M100.3,31.8c0-1.8-0.2-3.3-0.7-4.6s-1.1-2.4-1.9-3.2s-1.8-1.4-2.9-1.8s-2.2-0.5-3.5-0.5s-2.4,0.2-3.5,0.5s-2.1,0.9-2.9,1.8s-1.4,1.8-1.9,3.2s-0.7,2.8-0.7,4.6c0,1.8,0.2,3.3,0.7,4.6s1.1,2.4,1.9,3.2s1.8,1.4,2.9,1.8s2.2,0.5,3.5,0.5s2.4-0.2,3.5-0.5s2.1-0.9,2.9-1.8s1.4-1.8,1.9-3.2S100.3,33.5,100.3,31.8z M167.9,11.2c-1,1-1.6,2.3-1.6,3.8s0.5,2.7,1.6,3.8s2.3,1.6,3.8,1.6s2.7-0.5,3.8-1.6s1.6-2.3,1.6-3.8s-0.5-2.7-1.6-3.8S173.2,9.6,171.7,9.6S168.9,10.1,167.9,11.2z M171.7,22h-6.6v24.2h6.6V22z M71.9,16.5c-2.1,0-4,0.3-5.9,1s-3.5,1.7-4.8,3s-2.4,2.9-3.1,4.9V46.2h6.6V26.8c0-1.1,0.2-2.1,0.5-2.9s0.8-1.5,1.4-2.1s1.2-1,2-1.3c0.8-0.3,1.6-0.4,2.5-0.4s1.7,0.1,2.5,0.4s1.5,0.8,2,1.3c0.6,0.6,1,1.3,1.3,2.1s0.5,1.8,0.5,2.9V46.2h6.6V26.8c0-2.3-0.3-4.3-0.9-6.2s-1.5-3.6-2.6-4.9s-2.6-2.4-4.2-3.2S74.2,16.5,71.9,16.5z M131.9,16.5c-2.1,0-4,0.3-5.9,1s-3.5,1.7-4.8,3s-2.4,2.9-3.1,4.9V46.2h6.6V26.8c0-1.1,0.2-2.1,0.5-2.9s0.8-1.5,1.4-2.1s1.2-1,2-1.3c0.8-0.3,1.6-0.4,2.5-0.4s1.7,0.1,2.5,0.4s1.5,0.8,2,1.3c0.6,0.6,1,1.3,1.3,2.1s0.5,1.8,0.5,2.9V46.2h6.6V26.8c0-2.3-0.3-4.3-0.9-6.2s-1.5-3.6-2.6-4.9s-2.6-2.4-4.2-3.2S134.2,16.5,131.9,16.5z M12.8,40.1c0,0.6,0.1,1,0.4,1.4s0.6,0.5,1.1,0.5s0.8-0.1,1.1-0.2s0.5-0.2,0.6-0.3l1.8,5.1c-0.8,0.3-1.7,0.5-2.7,0.7c-1.1,0.2-2.1,0.3-3.2,0.3c-1.8,0-3.3-0.5-4.4-1.6s-1.7-2.6-1.7-4.6V17h6.6V40.1z M9.7,11.2c-1,1-1.6,2.3-1.6,3.8s0.5,2.7,1.6,3.8s2.3,1.6,3.8,1.6s2.7-0.5,3.8-1.6s1.6-2.3,1.6-3.8s-0.5-2.7-1.6-3.8s-2.3-1.6-3.8-1.6S10.7,10.1,9.7,11.2z M157.1,31.8c0,2.6-0.4,4.9-1.3,6.8s-2,3.5-3.5,4.7s-3.2,2.1-5.1,2.6s-3.9,0.8-6,0.8s-4.1-0.3-6.1-0.8s-3.8-1.4-5.3-2.6s-2.7-2.8-3.6-4.7c-0.9-1.9-1.3-4.2-1.3-6.8c0-2.6,0.4-4.9,1.3-6.8s2-3.5,3.6-4.7s3.3-2.1,5.3-2.6s4-0.8,6.1-0.8s4.1,0.3,6,0.8s3.6,1.4,5.1,2.6s2.6,2.8,3.5,4.7C156.7,26.9,157.1,29.1,157.1,31.8z M150.4,31.8c0-1.8-0.2-3.3-0.7-4.6s-1.1-2.4-1.9-3.2s-1.8-1.4-2.9-1.8s-2.2-0.5-3.5-0.5s-2.4,0.2-3.5,0.5s-2.1,0.9-2.9,1.8s-1.4,1.8-1.9,3.2c-0.5,1.4-0.7,2.8-0.7,4.6c0,1.8,0.2,3.3,0.7,4.6s1.1,2.4,1.9,3.2s1.8,1.4,2.9,1.8s2.2,0.5,3.5,0.5s2.4-0.2,3.5-0.5s2.1-0.9,2.9-1.8s1.4-1.8,1.9-3.2C150.2,35.1,150.4,33.6,150.4,31.8z" fill="white"/></svg>');
+            background-repeat: no-repeat;
+            background-position: center;
+            height: 60px;
+            width: 200px;
+            margin-bottom: 25px;
+        }
+
+        /* Tekst powitania */
+        .welcome-text {
+            font-size: 24px;
+            font-weight: 500;
+            line-height: 1.3;
+            margin-bottom: 35px;
+            max-width: 300px;
+        }
+
+        /* Gradientowy fragment 'codzienne chwile' */
+        .gradient-highlight {
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 500;
+        }
+
+        /* GŁÓWNY PRZYCISK: NIEBIESKI, WIĘKSZY, BARDZIEJ ZAAOKRĄGLONY */
+        .open-btn {
+            width: 100%;
+            max-width: 340px;
+            background-color: var(--btn-blue);
+            color: var(--btn-text);
+            border: none;
+            border-radius: 12px; /* Mniejsze zaokrąglenie niż pigułka, ale wciąż miękkie */
+            padding: 16px; /* Wyższy przycisk */
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        /* Dolne linki: 'Zaloguj się lub zarejestruj się' */
+        .login-register-links {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .login-register-links a {
+            color: var(--link-blue);
+            text-decoration: none;
+        }
+
+        .login-register-links span {
+            color: var(--secondary-text);
+            margin: 0 4px;
+        }
+
+        /* STOPKA: META */
+        .footer {
+            width: 100%;
+            max-width: 360px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            padding-bottom: 25px; /* Duży odstęp na dole */
+            margin-top: auto;
+        }
+
+        .from-text {
+            color: var(--secondary-text);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 6px;
+        }
+
+        .meta-logo-footer {
+            display: flex;
+            align-items: center;
+            color: var(--main-text);
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .meta-symbol-footer {
+            font-size: 22px;
+            margin-right: 6px;
+            line-height: 1;
+        }
+
+        /* DOLNY PASEK NAWIGACJI (TYLKO OBRAZOWO) */
+        .bottom-nav-bar {
+            width: 100%;
+            background-color: #000;
+            border-top: 1px solid #262626;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+
+        .nav-item {
+            color: white;
+            font-size: 24px;
+            opacity: 0.8;
+        }
+
+        /* Ukryj pasek nawigacji w tym widoku powitalnym, aby był czysty */
+        .bottom-nav-bar { display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="header-lang">Polski</div>
+
+    <div class="hero-section">
+        <div class="insta-text-logo"></div>
+        
+        <p class="welcome-text">
+            Udostępnij <span class="gradient-highlight">codzienne chwile</span> bliskim znajomym.
+        </p>
+        
+        <a href="#" class="open-btn">Otwórz Instagram</a>
+        
+        <div class="login-register-links">
+            <a href="#">Zaloguj się</a>
+            <span>lub</span>
+            <a href="#">zarejestruj się</a>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="from-text">from</div>
+        <div class="meta-logo-footer">
+            <span class="meta-symbol-footer">∞</span> Meta
+        </div>
+    </div>
+
+</body>
+</html>
